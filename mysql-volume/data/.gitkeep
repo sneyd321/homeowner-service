@@ -1,0 +1,1 @@
+#Folder required to mount MySQL volume to MySQL docker contianer. Removal of this folder will result in data not persisting when the container stops running.
