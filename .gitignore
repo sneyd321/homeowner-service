@@ -1,4 +1,4 @@
 *.db
-__pycache__/
 orm-service/__pycache__/
-/mysql-volume/data/*
+orm-service/server/__pycache__/
+mysql-volume/data/*
