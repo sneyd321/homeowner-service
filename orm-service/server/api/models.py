@@ -9,6 +9,7 @@ class Homeowner(db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password = db.Column(db.String(100))
     phoneNumber = db.Column(db.String(15))
+    token = db.Column(db.String(38))
     homeownerLocation = db.relationship('HomeownerLocation', backref='homeowner', lazy=True, uselist=False)
     
     def __init__(self, homeownerData):
@@ -17,6 +18,7 @@ class Homeowner(db.Model):
         self.email = homeownerData["email"]
         self.password = homeownerData["password"]
         self.phoneNumber = homeownerData["phoneNumber"]
+        self.token = homeownerData["token"]
         self.homeownerLocation = HomeownerLocation(homeownerData["homeownerLocation"])
 
 
@@ -54,7 +56,8 @@ class Homeowner(db.Model):
             Homeowner.lastName: self.lastName,
             Homeowner.email: self.email,
             Homeowner.password: self.password,
-            Homeowner.phoneNumber: self.phoneNumber
+            Homeowner.phoneNumber: self.phoneNumber,
+            Homeowner.token: self.token
         }
 
     def toJson(self):
