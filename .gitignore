@@ -1,4 +1,3 @@
 *.db
-orm-service/__pycache__/
-orm-service/server/__pycache__/
+__pycache__/
 mysql-volume/data/*
