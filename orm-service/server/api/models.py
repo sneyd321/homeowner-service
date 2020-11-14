@@ -66,7 +66,6 @@ class Homeowner(db.Model):
             "firstName": self.firstName,
             "lastName": self.lastName,
             "email": self.email,
-            "password": self.password,
             "phoneNumber": self.phoneNumber,
             "homeownerLocation": self.homeownerLocation.toJson()
         }
