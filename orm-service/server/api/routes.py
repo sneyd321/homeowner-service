@@ -25,7 +25,7 @@ def load_homeowner(id):
     homeowner = Homeowner.query.get(id)
     if homeowner:
         return jsonify(homeowner.toJson())
-    return Response(response="Error: Record does not exist", status=404)
+    return Response(response="No content", status=204)
 
 @homeowner.route("/login", methods=["POST"])
 def login():
@@ -34,3 +34,15 @@ def login():
     if homeowner and homeowner.verifyPassword(data["password"]):
         return jsonify(homeowner.toJson())
     return Response(response="Error account not found", status=401)
+
+@homeowner.route("/Homeowner/<int:id>", methods=["DELETE"])
+def remove_homeowner(id):
+    data = request.get_json()
+    try:
+        homeowner = Homeowner.query.get(id)
+        if homeowner:
+            homeowner.delete()
+            return Response(response="Successfully deleted", status=200)
+        return Response(response="No content", status=204)
+    except KeyError:
+        return Response(response="Error: Data in invalid format", status=400)

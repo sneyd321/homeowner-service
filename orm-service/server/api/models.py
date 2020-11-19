@@ -48,6 +48,18 @@ class Homeowner(db.Model):
                 db.session.rollback()
                 return False
         return False
+
+    def delete(self):
+        try:
+            self.homeownerLocation.delete()
+            Homeowner.query.filter(Homeowner.email == self.email).delete()
+            db.session.commit()
+            return True
+        except IntegrityError:
+            print("Error")
+            db.session.rollback()
+            return False
+
         
 
     def toDict(self):
@@ -96,7 +108,11 @@ class HomeownerLocation(db.Model):
 
     
     def update(self):
-        HomeownerLocation.query.update(self.toDict(), synchronize_session=False)
+        HomeownerLocation.query.filter(HomeownerLocation.homeownerId == self.homeownerId).update(self.toDict(), synchronize_session=False)
+        db.session.commit()
+
+    def delete(self):
+        HomeownerLocation.query.filter(HomeownerLocation.homeownerId == self.homeownerId).delete()
         db.session.commit()
 
     def toDict(self):
