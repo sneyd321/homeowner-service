@@ -9,7 +9,6 @@ class Homeowner(db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password = db.Column(db.String(100))
     phoneNumber = db.Column(db.String(15))
-    token = db.Column(db.String(38))
     homeownerLocation = db.relationship('HomeownerLocation', backref='homeowner', lazy=True, uselist=False)
     
     def __init__(self, homeownerData):
@@ -18,8 +17,8 @@ class Homeowner(db.Model):
         self.email = homeownerData["email"]
         self.password = homeownerData["password"]
         self.phoneNumber = homeownerData["phoneNumber"]
-        self.token = homeownerData["token"]
         self.homeownerLocation = HomeownerLocation(homeownerData["homeownerLocation"])
+
 
 
     def generatePasswordHash(self, password):
@@ -33,7 +32,8 @@ class Homeowner(db.Model):
             db.session.add(self)
             db.session.commit()
             return True
-        except IntegrityError:
+        except IntegrityError as e:
+            print(e)
             db.session.rollback()
             return False
 
@@ -68,8 +68,7 @@ class Homeowner(db.Model):
             Homeowner.lastName: self.lastName,
             Homeowner.email: self.email,
             Homeowner.password: self.password,
-            Homeowner.phoneNumber: self.phoneNumber,
-            Homeowner.token: self.token
+            Homeowner.phoneNumber: self.phoneNumber
         }
 
     def toJson(self):
@@ -98,6 +97,7 @@ class HomeownerLocation(db.Model):
     homeownerId = db.Column(db.Integer(), db.ForeignKey('homeowner.id'), nullable=False)
 
     def __init__(self, homeownerLocationData):
+      
         self.streetNumber = homeownerLocationData["streetNumber"]
         self.streetName = homeownerLocationData["streetName"]
         self.city = homeownerLocationData["city"]
@@ -106,7 +106,16 @@ class HomeownerLocation(db.Model):
         self.unitNumber = homeownerLocationData["unitNumber"]
         self.poBox = homeownerLocationData["poBox"]
 
-    
+    def insert(self):
+        try:
+            db.session.add(self)
+            db.session.commit()
+            return True
+        except IntegrityError as e:
+            print(e)
+            db.session.rollback()
+            return False
+
     def update(self):
         HomeownerLocation.query.filter(HomeownerLocation.homeownerId == self.homeownerId).update(self.toDict(), synchronize_session=False)
         db.session.commit()
