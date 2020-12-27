@@ -1,6 +1,8 @@
 from werkzeug.security import generate_password_hash, check_password_hash
-from server import db
+from server import db, app
 from sqlalchemy.exc import IntegrityError, OperationalError
+from itsdangerous import (TimedJSONWebSignatureSerializer
+                          as Serializer, BadSignature, SignatureExpired)
 
 class Homeowner(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -9,7 +11,6 @@ class Homeowner(db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password = db.Column(db.String(100))
     phoneNumber = db.Column(db.String(15))
-    homeownerLocation = db.relationship('HomeownerLocation', backref='homeowner', lazy=True, uselist=False)
     
     def __init__(self, homeownerData):
         self.firstName = homeownerData["firstName"]
@@ -17,9 +18,7 @@ class Homeowner(db.Model):
         self.email = homeownerData["email"]
         self.password = homeownerData["password"]
         self.phoneNumber = homeownerData["phoneNumber"]
-        self.homeownerLocation = HomeownerLocation(homeownerData["homeownerLocation"])
-
-
+        
 
     def generatePasswordHash(self, password):
         self.password = generate_password_hash(password)
@@ -51,7 +50,7 @@ class Homeowner(db.Model):
 
     def delete(self):
         try:
-            self.homeownerLocation.delete()
+            #self.homeownerLocation.delete()
             Homeowner.query.filter(Homeowner.email == self.email).delete()
             db.session.commit()
             return True
@@ -78,73 +77,27 @@ class Homeowner(db.Model):
             "lastName": self.lastName,
             "email": self.email,
             "phoneNumber": self.phoneNumber,
-            "homeownerLocation": self.homeownerLocation.toJson()
+            "authToken": self.generate_auth_token().decode("utf-8")
         }
 
+
+    def generate_auth_token(self, expiration = 600):
+        s = Serializer(app.config['SECRET_KEY'], expires_in = expiration)
+        return s.dumps({ 'id': self.id })
+
+    @staticmethod
+    def verify_auth_token(token):
+        s = Serializer(app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+            return Homeowner.query.get(data['id'])
+        except SignatureExpired:
+            return None 
+        except BadSignature:
+            return None # invalid token
+        
+        
 
     def __repr__(self):
         return "< Homeowner: " + self.firstName + " " + self.lastName + " >"
 
-class HomeownerLocation(db.Model):
-    id = db.Column(db.Integer(), primary_key=True)
-    streetNumber = db.Column(db.Integer())
-    streetName = db.Column(db.String(200))
-    city = db.Column(db.String(100))
-    province = db.Column(db.String(100))
-    postalCode = db.Column(db.String(10))
-    unitNumber = db.Column(db.String(10))
-    poBox = db.Column(db.String(10))
-    homeownerId = db.Column(db.Integer(), db.ForeignKey('homeowner.id'), nullable=False)
-
-    def __init__(self, homeownerLocationData):
-      
-        self.streetNumber = homeownerLocationData["streetNumber"]
-        self.streetName = homeownerLocationData["streetName"]
-        self.city = homeownerLocationData["city"]
-        self.province = homeownerLocationData["province"]
-        self.postalCode = homeownerLocationData["postalCode"]
-        self.unitNumber = homeownerLocationData["unitNumber"]
-        self.poBox = homeownerLocationData["poBox"]
-
-    def insert(self):
-        try:
-            db.session.add(self)
-            db.session.commit()
-            return True
-        except IntegrityError as e:
-            print(e)
-            db.session.rollback()
-            return False
-
-    def update(self):
-        HomeownerLocation.query.filter(HomeownerLocation.homeownerId == self.homeownerId).update(self.toDict(), synchronize_session=False)
-        db.session.commit()
-
-    def delete(self):
-        HomeownerLocation.query.filter(HomeownerLocation.homeownerId == self.homeownerId).delete()
-        db.session.commit()
-
-    def toDict(self):
-        return {
-            HomeownerLocation.streetNumber: self.streetNumber,
-            HomeownerLocation.streetName: self.streetName,
-            HomeownerLocation.city: self.city,
-            HomeownerLocation.province: self.province,
-            HomeownerLocation.postalCode: self.postalCode,
-            HomeownerLocation.unitNumber: self.unitNumber,
-            HomeownerLocation.poBox: self.poBox
-        }
-
-    def toJson(self):
-        return {
-            "streetNumber": self.streetNumber,
-            "streetName": self.streetName,
-            "city": self.city,
-            "province": self.province,
-            "postalCode": self.postalCode,
-            "unitNumber": self.unitNumber,
-            "poBox": self.poBox
-        }
-
-    def __repr__(self):
-        return "< Homeowner Location: " + str(self.streetNumber) + " " + self.streetName + " >"

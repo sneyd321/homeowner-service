@@ -1,13 +1,29 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField
-from wtforms.validators import InputRequired
+from wtforms import StringField, PasswordField
+from wtforms.validators import InputRequired, Length, Email, EqualTo
 
 class HomeownerForm(FlaskForm):
-    firstName = StringField('First Name', validators=[InputRequired(message = "Please enter a first name")], render_kw={"icon": "account_circle"})
-    lastName = StringField('Last Name' , render_kw={"icon": "account_circle"})
-    email = StringField('Email', render_kw={"icon": "email"})
-    phoneNumber = StringField("Phone Number", render_kw={"icon": "smartphone"})
-    password = StringField("Password", render_kw={"icon": "vpn_key"})
-    reTypePassword = StringField("Re-Type Password", render_kw={"icon": "vpn_key"})
+    firstName = StringField('First Name', 
+    validators=[InputRequired("Please enter a first name"), Length(min=1, max=100, message="Please enter a name less that 100 characters.")], 
+    render_kw={"icon": "account_circle", "required": False, "helperText": "Ex. John"})
 
+    lastName = StringField('Last Name' , 
+    validators=[InputRequired("Please enter a last name"), Length(min=1, max=100, message="Please enter a name less that 100 characters.")], 
+    render_kw={"icon": "account_circle", "required": False, "helperText": "Ex. Smith"})
+
+    email = StringField('Email', 
+    validators=[InputRequired("Please enter an email"), Email("Please enter a valid email")],
+    render_kw={"icon": "email", "required": False, "helperText": "Ex. name@example.com"})
+
+    phoneNumber = StringField("Phone Number",
+    validators=[InputRequired("Please enter a phone number")],
+    render_kw={"icon": "smartphone", "required": False, "helperText": "Ex. 123-456-7890"})
+
+
+    password = PasswordField("Password", validators=[InputRequired("Please enter a Password"), EqualTo("reTypePassword", "Passwords must match")]
+    ,render_kw={"icon": "vpn_key", "required": False, "helperText": "Word a phrase to keep secret"})
+
+
+    reTypePassword = PasswordField("Re-Type Password", validators=[InputRequired("Please re-type your password")]
+    ,render_kw={"icon": "vpn_key", "required": False, "helperText": "Re type the above field"})
 
