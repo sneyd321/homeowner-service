@@ -72,7 +72,6 @@ class Homeowner(db.Model):
 
     def toJson(self):
         return {
-            "homeownerId": self.id,
             "firstName": self.firstName,
             "lastName": self.lastName,
             "email": self.email,

@@ -1,10 +1,10 @@
 version: '3.5'
 
 services: 
-    db-service:
+    homeowner-service:
         image: sneyd321/homeowner-service
         depends_on: 
-            - mysql
+            - homeowner-db
         ports: 
             - 8081:8081
         networks: 
@@ -15,7 +15,7 @@ services:
         restart: on-failure
    
  
-    mysql:
+    homeowner-db:
         image: mysql
         
         command: --init-file /data/application/init.sql

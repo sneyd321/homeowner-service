@@ -9,7 +9,7 @@ class Config:
 
 
     def productionConfig(self):    
-        self.app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://admin:admin@mysql:3306/roomr"
+        self.app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://admin:admin@homeowner-db:3306/roomr"
         self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
         self.app.config["SECRET_KEY"] = "SECCCCCCCCCCCCCCCCCCCCCCCCRET"
         return self.app
@@ -17,9 +17,11 @@ class Config:
     def developmentConfig(self):    
         self.app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:root@127.0.0.1:3306/roomr"
         self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+        self.app.config["SECRET_KEY"] = "SECCCCCCCCCCCCCCCCCCCCCCCCRET"
         return self.app
 
     def testConfig(self):
         self.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(basedir, 'test.db')
         self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+        self.app.config["SECRET_KEY"] = "SECCCCCCCCCCCCCCCCCCCCCCCCRET"
         return self.app
