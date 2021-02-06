@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homeowner-db
+spec:
+  selector:
+    matchLabels:
+      run: mysql
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: mysql
+    spec:
+      containers:
+      - name: homeowner-mysql-container
+        image: sneyd321/homeowner-db:latest
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: homeowner-db-volume
+          mountPath: /var/lib/mysql
+      imagePullSecrets:
+        - name: key
+      volumes:
+      - name: homeowner-db-persistent-storage
+        persistentVolumeClaim:
+          claimName: homeowner-db-pv-claim

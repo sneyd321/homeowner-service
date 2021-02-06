@@ -2,7 +2,7 @@ from server import create_app, db
 
 
 
-app = create_app("prod")
+app = create_app("dev")
 with app.app_context():
     db.create_all()
     db.session.commit()

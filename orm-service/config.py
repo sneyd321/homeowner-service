@@ -9,13 +9,13 @@ class Config:
 
 
     def productionConfig(self):    
-        self.app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://admin:admin@homeowner-db:3306/roomr"
+        self.app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:root@homeowner-db.default.svc.cluster.local:3306/roomr"
         self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
         self.app.config["SECRET_KEY"] = "SECCCCCCCCCCCCCCCCCCCCCCCCRET"
         return self.app
 
     def developmentConfig(self):    
-        self.app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:root@127.0.0.1:3306/roomr"
+        self.app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:root@homeowner-db:3306/roomr"
         self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
         self.app.config["SECRET_KEY"] = "SECCCCCCCCCCCCCCCCCCCCCCCCRET"
         return self.app

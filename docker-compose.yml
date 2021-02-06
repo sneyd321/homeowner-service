@@ -19,9 +19,9 @@ services:
         image: mysql
         
         command: --init-file /data/application/init.sql
-        volumes: 
-            - ./mysql-volume/init/init.sql:/data/application/init.sql
-            - ./mysql-volume/data:/var/lib/mysql
+        #volumes: 
+            #- ./mysql/mysql-volume/init/init.sql:/data/application/init.sql
+            #- ./mysql/mysql-volume/data:/var/lib/mysql
 
         environment:
             MYSQL_ROOT_PASSWORD: root

@@ -10,10 +10,12 @@ def get_sign_in_form():
     attrs = list(form._fields.values())
     if form.validate_on_submit():
         data = request.form
+        print(data)
+
         homeowner = Homeowner(data)
         homeowner.generatePasswordHash(data["password"])
         if homeowner.insert():
-            return jsonify(homeowner.toJson())
+            return "<h1>Account successfully created</h1>"
         return render_template("signupTemplate.html", form=form, fields=attrs[:-1], conflict="Error: Account already exists")
     return render_template("signupTemplate.html", form=form, fields=attrs[:-1], conflict="")
 
