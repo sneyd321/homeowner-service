@@ -1,7 +1,8 @@
 FROM mysql:8
 
 
-ENV MYSQL_ROOT_PASSWORD="root"
+ENV MYSQL_ROOT_PASSWORD="admin"
+ENV MYSQL_ROOT_HOST='0.0.0.0'
 
 EXPOSE 3306 3306
 COPY ./mysql-volume/init/init.sql /data/application/init.sql

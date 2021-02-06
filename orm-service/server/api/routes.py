@@ -8,12 +8,14 @@ from server.forms.HomeownerForm import HomeownerForm
 def get_sign_in_form():
     form = HomeownerForm()
     attrs = list(form._fields.values())
-    if form.validate_on_submit():
-        data = request.form
-        print(data)
+    if request.method == 'POST':
+        print((request.data))
 
-        homeowner = Homeowner(data)
-        homeowner.generatePasswordHash(data["password"])
+
+
+        homeowner = Homeowner(firstName=request.form.get("firstName"), lastName=request.form.get("lastName"), 
+        email=request.form.get("email"), password=request.form.get("password"), phoneNumber=request.form.get("phoneNumber"))
+        homeowner.generatePasswordHash(request.form.get("password"))
         if homeowner.insert():
             return "<h1>Account successfully created</h1>"
         return render_template("signupTemplate.html", form=form, fields=attrs[:-1], conflict="Error: Account already exists")
@@ -32,20 +34,12 @@ def get_homeowner():
 
 
 
-@homeowner.route("/verifyHomeowner", methods=["GET"])
-def verify_homeowner():
-    bearer = request.headers.get("Authorization")
-    if bearer:
-        homeowner = Homeowner.verify_auth_token(bearer[7:])
-        if homeowner:
-            return jsonify({"homeownerId": homeowner.id})
-        return Response(response="Not Found", status=404)
-    return Response(response="Not Authenticated", status=401)
-
-
 @homeowner.route("/login", methods=["POST"])
 def login():
-    homeowner = Homeowner.query.filter(Homeowner.email == request.authorization.username).first()
+    try:
+        homeowner = Homeowner.query.filter(Homeowner.email == request.authorization.username).first()
+    except AttributeError:
+        return Response(response="Error invalid account credentials", status=401)
     if homeowner:
         if homeowner.verifyPassword(request.authorization.password):
             return jsonify(homeowner.toJson())

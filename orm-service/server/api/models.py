@@ -12,12 +12,12 @@ class Homeowner(db.Model):
     password = db.Column(db.String(100))
     phoneNumber = db.Column(db.String(15))
     
-    def __init__(self, homeownerData):
-        self.firstName = homeownerData["firstName"]
-        self.lastName = homeownerData["lastName"]
-        self.email = homeownerData["email"]
-        self.password = homeownerData["password"]
-        self.phoneNumber = homeownerData["phoneNumber"]
+    def __init__(self, **kwargs):
+        self.firstName = kwargs.get("firstName", "")
+        self.lastName = kwargs.get("lastName", "")
+        self.email = kwargs.get("email", "")
+        self.password = kwargs.get("password", "")
+        self.phoneNumber = kwargs.get("phoneNumber", "")
         
 
     def generatePasswordHash(self, password):

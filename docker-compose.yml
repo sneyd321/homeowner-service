@@ -16,15 +16,15 @@ services:
    
  
     homeowner-db:
-        image: mysql
+        image: sneyd321/homeowner-db
         
-        command: --init-file /data/application/init.sql
+        #command: --init-file /data/application/init.sql
         #volumes: 
             #- ./mysql/mysql-volume/init/init.sql:/data/application/init.sql
             #- ./mysql/mysql-volume/data:/var/lib/mysql
 
-        environment:
-            MYSQL_ROOT_PASSWORD: root
+        #environment:
+            #MYSQL_ROOT_PASSWORD: root
 
         cap_add:
             - SYS_NICE
