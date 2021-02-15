@@ -27,13 +27,16 @@ class Homeowner(db.Model):
         return check_password_hash(self.password, password)
 
     def insert(self):
+        print(vars(db), flush=True)
         try:
             db.session.add(self)
             db.session.commit()
+            db.session.close()
             return True
         except IntegrityError as e:
             print(e)
             db.session.rollback()
+            db.session.close()
             return False
 
     def update(self):
@@ -42,9 +45,11 @@ class Homeowner(db.Model):
             try:
                 self.homeownerLocation.update()
                 db.session.commit()
+                db.session.close()
                 return True
             except OperationalError:
                 db.session.rollback()
+                db.session.close()
                 return False
         return False
 
@@ -53,10 +58,12 @@ class Homeowner(db.Model):
             #self.homeownerLocation.delete()
             Homeowner.query.filter(Homeowner.email == self.email).delete()
             db.session.commit()
+            db.session.close()
             return True
         except IntegrityError:
             print("Error")
             db.session.rollback()
+            db.session.close()
             return False
 
         
@@ -79,6 +86,11 @@ class Homeowner(db.Model):
             "authToken": self.generate_auth_token().decode("utf-8")
         }
 
+
+    def getId(self):
+        return {
+            "homeownerId": self.id
+        }
 
     def generate_auth_token(self, expiration = 600):
         s = Serializer(app.config['SECRET_KEY'], expires_in = expiration)

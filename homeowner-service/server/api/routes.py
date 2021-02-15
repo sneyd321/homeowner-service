@@ -9,7 +9,7 @@ def get_sign_in_form():
     form = HomeownerForm()
     attrs = list(form._fields.values())
     if request.method == 'POST':
-        print((request.data))
+        print(request.form, flush=True)
         homeowner = Homeowner(firstName=request.form.get("firstName"), lastName=request.form.get("lastName"), 
         email=request.form.get("email"), password=request.form.get("password"), phoneNumber=request.form.get("phoneNumber"))
         homeowner.generatePasswordHash(request.form.get("password"))
@@ -29,6 +29,16 @@ def get_homeowner():
         return Response(response="Not Found", status=404)
     return Response(response="Not Authenticated", status=401)
 
+
+@homeowner.route("/Verify", methods=["GET"])
+def verify_homeowner():
+    bearer = request.headers.get("Authorization")
+    if bearer:
+        homeowner = Homeowner.verify_auth_token(bearer[7:])
+        if homeowner:
+            return jsonify(homeowner.getId())
+        return Response(response="Not Found", status=404)
+    return Response(response="Not Authenticated", status=401)
 
 
 @homeowner.route("/login", methods=["POST"])
