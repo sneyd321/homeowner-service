@@ -1,13 +1,23 @@
-from flask import Flask
+from flask import Flask, Response
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import pymysql
 pymysql.install_as_MySQLdb()
 
+from kazoo.client import KazooClient, KazooState
+
+zk = KazooClient(hosts='host.docker.internal:2181')
+zk.start()
+
+
+
 db = SQLAlchemy()
 app = Flask(__name__)
 
+@app.route("/Health")
+def health_check():
+    return Response(status=200)
 
 def create_app(env):
     #Create app

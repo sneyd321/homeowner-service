@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
 from wtforms.validators import InputRequired, Length, Email, EqualTo
 
+  
 class HomeownerForm(FlaskForm):
     firstName = StringField('First Name', 
     validators=[InputRequired("Please enter a first name"), Length(min=1, max=100, message="Please enter a name less that 100 characters.")], 
@@ -26,4 +27,3 @@ class HomeownerForm(FlaskForm):
 
     reTypePassword = PasswordField("Re-Type Password", validators=[InputRequired("Please re-type your password")]
     ,render_kw={"icon": "vpn_key", "required": False, "helperText": "Re type the above field", "type": "password"})
-

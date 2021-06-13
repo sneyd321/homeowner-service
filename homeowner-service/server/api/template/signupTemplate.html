@@ -42,10 +42,9 @@
         </style>
 </head>
 <body>
-    <h2>Sign Up Homeowner</h2>
-    <form method="POST" action="http://192.168.0.107:8080/api/v1/">
-        {{ form.csrf_token }}
-
+    <h2>Sign Up Homeowner </h2>
+    <!--<form method="POST" action="http://34.107.132.144/homeowner-gateway/v1/">-->
+    <form method="POST" action="{{ url }}">  
 
         {% for item in fields %}
       

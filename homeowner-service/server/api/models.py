@@ -13,6 +13,7 @@ class Homeowner(db.Model):
     phoneNumber = db.Column(db.String(15))
     
     def __init__(self, **kwargs):
+        """**kwargs firstName, lastName, email, password, phoneNumber"""
         self.firstName = kwargs.get("firstName", "")
         self.lastName = kwargs.get("lastName", "")
         self.email = kwargs.get("email", "")
@@ -27,7 +28,6 @@ class Homeowner(db.Model):
         return check_password_hash(self.password, password)
 
     def insert(self):
-        print(vars(db), flush=True)
         try:
             db.session.add(self)
             db.session.commit()
@@ -43,7 +43,6 @@ class Homeowner(db.Model):
         rows = Homeowner.query.filter(Homeowner.email == self.email).update(self.toDict(), synchronize_session=False)
         if rows == 1:
             try:
-                self.homeownerLocation.update()
                 db.session.commit()
                 db.session.close()
                 return True
@@ -55,7 +54,6 @@ class Homeowner(db.Model):
 
     def delete(self):
         try:
-            #self.homeownerLocation.delete()
             Homeowner.query.filter(Homeowner.email == self.email).delete()
             db.session.commit()
             db.session.close()
@@ -111,4 +109,5 @@ class Homeowner(db.Model):
 
     def __repr__(self):
         return "< Homeowner: " + self.firstName + " " + self.lastName + " >"
+
 
