@@ -43,6 +43,8 @@ def sign_up():
     return Response(response="Error: Zookeeper down", status=503)
    
 
+
+
 @homeowner.route("/Homeowner/<int:homeownerId>")
 def get_homeowner_by_id(homeownerId):
     homeowner = Homeowner.query.get(homeownerId)
@@ -77,15 +79,26 @@ def verify_homeowner():
     return Response(response="Not Authenticated", status=401)
 
 
-@homeowner.route("/login", methods=["POST"])
+@homeowner.route("/Login", methods=["POST"])
 def login():
     try:
         homeowner = Homeowner.query.filter(Homeowner.email == request.authorization.username).first()
     except AttributeError:
-        return Response(response="Error invalid account credentials", status=401)
+        return Response(response="Error invalid account credentials", status=400)
     if homeowner:
         if homeowner.verifyPassword(request.authorization.password):
             return jsonify(homeowner.toJson())
         return Response(response="Error invalid account credentials", status=401)
     return Response(response="Error account not found", status=404)
     
+@homeowner.route("Homeowner/<int:homeownerId>/imageURL", methods=["PUT"])
+def update_imageURL(homeownerId):
+    homeownerData = request.get_json()
+    if "imageURL" in homeownerData and "homeownerId" in homeownerData:
+        homeowner = Homeowner.query.get(homeownerData["homeownerId"])
+        homeowner.imageURL = homeownerData["imageURL"]
+        if homeowner.update():
+            return Response(status=200)
+        return Response(response="Error: Failed to update tenant", status=400)
+    else:
+        return Response(response="Error: Invalid Request", status=400)
