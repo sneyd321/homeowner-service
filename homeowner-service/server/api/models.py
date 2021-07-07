@@ -11,6 +11,7 @@ class Homeowner(db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password = db.Column(db.String(100))
     imageURL = db.Column(db.String(250), nullable=True)
+    taskId = db.Column(db.String(40), nullable=True)
     phoneNumber = db.Column(db.String(15))
     
     def __init__(self, **kwargs):
@@ -20,6 +21,7 @@ class Homeowner(db.Model):
         self.email = kwargs.get("email", "")
         self.password = kwargs.get("password", "")
         self.imageURL = None
+        self.taskId = None
         self.phoneNumber = kwargs.get("phoneNumber", "")
         
 
@@ -75,6 +77,7 @@ class Homeowner(db.Model):
             Homeowner.email: self.email,
             Homeowner.password: self.password,
             Homeowner.imageURL: self.imageURL,
+            Homeowner.taskId: self.taskId,
             Homeowner.phoneNumber: self.phoneNumber
         }
 
@@ -85,9 +88,13 @@ class Homeowner(db.Model):
             "email": self.email,
             "phoneNumber": self.phoneNumber,
             "imageURL": self.imageURL,
-            "authToken": self.generate_auth_token().decode("utf-8")
+            "taskId": self.taskId
         }
 
+    def getAuthToken(self):
+         return {
+            "authToken": self.generate_auth_token().decode("utf-8")
+        }
 
     def getId(self):
         return {

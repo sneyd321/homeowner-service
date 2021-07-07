@@ -7,8 +7,8 @@ pymysql.install_as_MySQLdb()
 
 from kazoo.client import KazooClient, KazooState
 
-zk = KazooClient(hosts='host.docker.internal:2181')
-zk.start()
+zk = KazooClient()
+
 
 
 
@@ -20,20 +20,20 @@ def health_check():
     return Response(status=200)
 
 def create_app(env):
-    #Create app
     global app
+
     config = Config(app)
     if env == "prod":
         app = config.productionConfig()
     elif env == "dev":
         app = config.developmentConfig()
-    elif env == "test":
-        app = config.testConfig()
     else:
-        return 
+        return None
     
     migrate = Migrate(app, db)
     db.init_app(app)
+    zk.set_hosts(app.config["ZOOKEEPER"])
+    zk.start()
     
     #Intialize modules
     from server.api.routes import homeowner
