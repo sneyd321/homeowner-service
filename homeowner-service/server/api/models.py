@@ -11,8 +11,8 @@ class Homeowner(db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password = db.Column(db.String(100))
     imageURL = db.Column(db.String(250), nullable=True)
-    taskId = db.Column(db.String(40), nullable=True)
     phoneNumber = db.Column(db.String(15))
+    isComplete = db.Column(db.Boolean())
     
     def __init__(self, **kwargs):
         """**kwargs firstName, lastName, email, password, phoneNumber"""
@@ -21,8 +21,8 @@ class Homeowner(db.Model):
         self.email = kwargs.get("email", "")
         self.password = kwargs.get("password", "")
         self.imageURL = None
-        self.taskId = None
         self.phoneNumber = kwargs.get("phoneNumber", "")
+        self.isComplete = False
         
 
     def generatePasswordHash(self, password):
@@ -35,13 +35,15 @@ class Homeowner(db.Model):
         try:
             db.session.add(self)
             db.session.commit()
-            db.session.close()
             return True
         except IntegrityError as e:
             print(e)
             db.session.rollback()
             db.session.close()
             return False
+
+    def close_session(self):
+        db.session.close()
 
     def update(self):
         rows = Homeowner.query.filter(Homeowner.email == self.email).update(self.toDict(), synchronize_session=False)
@@ -77,7 +79,6 @@ class Homeowner(db.Model):
             Homeowner.email: self.email,
             Homeowner.password: self.password,
             Homeowner.imageURL: self.imageURL,
-            Homeowner.taskId: self.taskId,
             Homeowner.phoneNumber: self.phoneNumber
         }
 
@@ -88,7 +89,7 @@ class Homeowner(db.Model):
             "email": self.email,
             "phoneNumber": self.phoneNumber,
             "imageURL": self.imageURL,
-            "taskId": self.taskId
+            "homeownerLocation": HomeownerLocation.query.filter(HomeownerLocation.homeownerId == self.id).first().toJson() if HomeownerLocation.query.filter(HomeownerLocation.homeownerId == self.id).first() else None
         }
 
     def getAuthToken(self):
@@ -122,3 +123,67 @@ class Homeowner(db.Model):
         return "< Homeowner: " + self.firstName + " " + self.lastName + " >"
 
 
+
+class HomeownerLocation(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    streetNumber = db.Column(db.Integer())
+    streetName = db.Column(db.String(200))
+    city = db.Column(db.String(100), )
+    province = db.Column(db.String(100))
+    postalCode = db.Column(db.String(10))
+    unitNumber = db.Column(db.String(10))
+    poBox = db.Column(db.String(10))
+    homeownerId = db.Column(db.Integer(), nullable=False)
+
+    def __init__(self, **homeownerLocationData):
+        self.streetNumber = homeownerLocationData.get("streetNumber", "")
+        self.streetName = homeownerLocationData.get("streetName", "")
+        self.city = homeownerLocationData.get("city", "")
+        self.province = homeownerLocationData.get("province", "")
+        self.postalCode = homeownerLocationData.get("postalCode", "")
+        self.unitNumber = homeownerLocationData.get("unitNumber", "")
+        self.poBox = homeownerLocationData.get("poBox", "")
+        self.homeownerId = homeownerLocationData.get("homeownerId", "")
+
+    def insert(self):
+        try:
+            db.session.add(self)
+            db.session.commit()
+            return True
+        except IntegrityError as e:
+            print(e)
+            db.session.rollback()
+            return False
+
+    def update(self):
+        HomeownerLocation.query.filter(HomeownerLocation.homeownerId == self.homeownerId).update(self.toDict(), synchronize_session=False)
+        db.session.commit()
+
+    def delete(self):
+        HomeownerLocation.query.filter(HomeownerLocation.homeownerId == self.homeownerId).delete()
+        db.session.commit()
+
+    def toDict(self):
+        return {
+            HomeownerLocation.streetNumber: self.streetNumber,
+            HomeownerLocation.streetName: self.streetName,
+            HomeownerLocation.city: self.city,
+            HomeownerLocation.province: self.province,
+            HomeownerLocation.postalCode: self.postalCode,
+            HomeownerLocation.unitNumber: self.unitNumber,
+            HomeownerLocation.poBox: self.poBox
+        }
+
+    def toJson(self):
+        return {
+            "streetNumber": self.streetNumber,
+            "streetName": self.streetName,
+            "city": self.city,
+            "province": self.province,
+            "postalCode": self.postalCode,
+            "unitNumber": self.unitNumber,
+            "poBox": self.poBox
+        }
+
+    def __repr__(self):
+        return "< Homeowner Location: " + str(self.streetNumber) + " " + self.streetName + " >"

@@ -15,6 +15,7 @@ class Config:
         self.app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_size' : 100, 'pool_recycle' : 280}
         self.app.config["WTF_CSRF_ENABLED"] = False
         self.app.config["ZOOKEEPER"] = "zookeeper.default.svc.cluster.local:2181"
+        self.app.config["DEV"] = False
         return self.app
 
     def developmentConfig(self):    
@@ -27,6 +28,7 @@ class Config:
         self.app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_size' : 100, 'pool_recycle' : 280}
         self.app.config["WTF_CSRF_ENABLED"] = False
         self.app.config["ZOOKEEPER"] = "host.docker.internal:2181"
+        self.app.config["DEV"] = True
         return self.app
 
     def testConfig(self):

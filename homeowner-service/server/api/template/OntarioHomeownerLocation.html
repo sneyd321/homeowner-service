@@ -39,12 +39,16 @@
         button:hover {
           opacity: 1;
         }
+
+
+        
         </style>
 </head>
 <body>
-    <h2>Sign Up Homeowner </h2>
-    <!--<form method="POST" action="http://34.107.132.144/homeowner-gateway/v1/">-->
-    <form method="POST" action="{{ url }}">  
+    <h2>Mailing Address</h2>
+    <form method="POST" action="{{url}}">
+       
+
 
         {% for item in fields %}
       
@@ -89,8 +93,9 @@
 
             {% endif %}
 
-
+           
         {% endfor %}
+        <input type="hidden" name="token" value="{{ token }}" >
         <button type="submit" >Next</button>
         <p style="color: red;">{{conflict}}</p>
 
