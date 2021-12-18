@@ -13,5 +13,5 @@ ENV FLASK_APP=app
 
 
 CMD ["python", "app.py"]
-#CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8081", "app:app"]
+#CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8081", "app:app", "--log-file", "gunicorn.log", "--log-level",  "DEBUG"]
 

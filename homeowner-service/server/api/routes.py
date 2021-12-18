@@ -9,19 +9,15 @@ from server import app
 zookeeper = Zookeeper()
 
 
-
-
 def get_homeowner_gateway():
-    return "192.168.100.109:8080"
+    return "34.107.132.144"
 
 @homeowner.route("/")
 def get_sign_up_form():
-    service = zookeeper.get_service("homeowner-gateway")
-    if app.config["DEV"]:
-        service = get_homeowner_gateway()
+    service = get_homeowner_gateway()
  
     if not service:
-        return Response(response="Error: Zookeeper down", status=503)
+        return Response(response="Error: Homeowner Service Currently Unavailable", status=503)
 
     form = HomeownerForm()
     return render_template("signupTemplate.html", form=form, fields=list(form._fields.values()), conflict="", url="http://" + service + "/homeowner-gateway/v1/")
@@ -30,9 +26,8 @@ def get_sign_up_form():
 
 @homeowner.route("/", methods=["POST"])
 def sign_up():
-    service = zookeeper.get_service("homeowner-gateway")
-    if app.config["DEV"]:
-        service = get_homeowner_gateway()
+  
+    service = get_homeowner_gateway()
 
     if not service:
         return Response(response="Error: Zookeeper down", status=503)
@@ -76,11 +71,10 @@ def sign_up():
 
 @homeowner.route("HomeownerLocation/<int:homeownerId>")
 def get_homeowner_location_form(homeownerId):
-    service = zookeeper.get_service("homeowner-gateway")
-    if app.config["DEV"]:
-        service = get_homeowner_gateway()
+   
+    service = get_homeowner_gateway()
     if not service:
-        return Response(response="Error: House Service Not Available", status=503)
+        return Response(response="Error: Homeowner Service Not Available", status=503)
 
     form = HomeownerLocationForm()
     return render_template("OntarioHomeownerLocation.html", form=form, fields=list(form._fields.values()), conflict="", url="http://" + service + "/homeowner-gateway/v1/HomeownerLocation/" + str(homeownerId))
@@ -91,9 +85,8 @@ def get_homeowner_location_form(homeownerId):
 
 @homeowner.route("HomeownerLocation/<int:homeownerId>", methods=["POST"])
 def create_homeowner_location(homeownerId):
-    service = zookeeper.get_service("homeowner-gateway")
-    if app.config["DEV"]:
-        service = get_homeowner_gateway()
+ 
+    service = get_homeowner_gateway()
     if not service:
         return Response(response="Error: Zookeeper down", status=503)
 

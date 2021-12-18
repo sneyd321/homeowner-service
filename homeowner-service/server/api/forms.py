@@ -46,7 +46,7 @@ class HomeownerLocationForm(FlaskForm):
 
     province = StringField('Province', 
     validators=[InputRequired("Please enter a province"), Length(min=1, max=100, message="Please enter a city less that 100 characters.")], 
-    render_kw={"icon": "location_city", "required": False, "helperText": "Ex. Toronto"})
+    render_kw={"icon": "location_city", "required": False, "helperText": "Ex. Ontario"})
 
     postalCode = StringField('Postal Code', 
     validators=[InputRequired("Please enter a postal code"), Length(min=1, max=10, message="Please enter a postal code less that 10 characters.")], 
